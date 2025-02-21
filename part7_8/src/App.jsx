@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import services from './api/services'
 
 const useField = (type) => {
