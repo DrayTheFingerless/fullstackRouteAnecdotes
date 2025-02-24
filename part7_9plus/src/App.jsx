@@ -1,6 +1,6 @@
 import "./index.css";
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LoginForm from "./components/LoginForm";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
@@ -10,12 +10,16 @@ import Notification from "./components/Notification";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import { createNotif } from "./reducers/notificationReducer";
-
+import { initBlogs, addBlog, removeBlog, likeBlog } from "./reducers/blogsReducer";
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector(state => { 
+    console.log(state.blogs)
+    return state.blogs
+  })
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -31,12 +35,9 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("sort by likes");
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  }, [user]);
+  useEffect(() => {    
+    dispatch(initBlogs())   
+  }, [user]) 
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -65,9 +66,8 @@ const App = () => {
 
   const handleCreate = async ({ url, title, author }) => {
     try {
-      const createdBlog = await blogService.create({ url, title, author });
+      dispatch(addBlog({ url, title, author }));
       blogFormRef.current.toggleVisibility();
-      setBlogs(blogs.concat(createdBlog).sort((a, b) => b.likes - a.likes));
       dispatch(createNotif("New blog created",true));
     } catch (exception) {
       dispatch(createNotif("Error trying to creat blog: " + exception.message, false));
@@ -77,12 +77,7 @@ const App = () => {
 
   const handleLike = async (newObject) => {
     try {
-      await blogService.put(newObject.id, newObject);
-      setBlogs(
-        blogs
-          .map((blog) => (blog.id === newObject.id ? newObject : blog))
-          .sort((a, b) => b.likes - a.likes),
-      );
+      dispatch(likeBlog(newObject))
     } catch (exception) {
       dispatch(createNotif("Error trying to like blog: " + exception.message, false));
       console.log(exception);
@@ -91,12 +86,7 @@ const App = () => {
 
   const handleRemove = async (newObject) => {
     try {
-      await blogService.remove(newObject.id);
-      setBlogs(
-        blogs
-          .filter((a) => a.id !== newObject.id)
-          .sort((a, b) => b.likes - a.likes),
-      );
+      dispatch(removeBlog(newObject))
     } catch (exception) {
       dispatch(createNotif("Error trying to like blog: " + exception.message, false));
       console.log(exception);
