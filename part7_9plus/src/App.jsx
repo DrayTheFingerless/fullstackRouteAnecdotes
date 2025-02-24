@@ -1,29 +1,24 @@
 import "./index.css";
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import LoginForm from "./components/LoginForm";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
+import Notification from "./components/Notification";
 
 import loginService from "./services/login";
 import blogService from "./services/blogs";
+import { createNotif } from "./reducers/notificationReducer";
 
-const Notification = ({ message, success }) => {
-  if (message === null) {
-    return null;
-  }
-
-  return <div className={success ? "success" : "error"}>{message}</div>;
-};
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
 
   const blogFormRef = useRef();
 
@@ -53,18 +48,12 @@ const App = () => {
 
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      setSuccessMessage("Logged in with user " + user.name);
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
+      dispatch(createNotif("Logged in with user " + user.name, true));
       setUser(user);
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(createNotif("Wrong credentials", false));
     }
   };
 
@@ -79,15 +68,9 @@ const App = () => {
       const createdBlog = await blogService.create({ url, title, author });
       blogFormRef.current.toggleVisibility();
       setBlogs(blogs.concat(createdBlog).sort((a, b) => b.likes - a.likes));
-      setSuccessMessage("New blog created");
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
+      dispatch(createNotif("New blog created",true));
     } catch (exception) {
-      setErrorMessage("Error trying to creat blog: " + exception.message);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(createNotif("Error trying to creat blog: " + exception.message, false));
       console.log(exception);
     }
   };
@@ -101,10 +84,7 @@ const App = () => {
           .sort((a, b) => b.likes - a.likes),
       );
     } catch (exception) {
-      setErrorMessage("Error trying to like blog: " + exception.message);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
       console.log(exception);
     }
   };
@@ -118,10 +98,7 @@ const App = () => {
           .sort((a, b) => b.likes - a.likes),
       );
     } catch (exception) {
-      setErrorMessage("Error trying to like blog: " + exception.message);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
       console.log(exception);
     }
   };
@@ -136,8 +113,7 @@ const App = () => {
   if (user === null) {
     return (
       <>
-        <Notification success={true} message={successMessage} />
-        <Notification success={false} message={errorMessage} />
+        <Notification />
         <LoginForm
           handleLogin={handleLogin}
           username={username}
@@ -151,8 +127,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification success={true} message={successMessage} />
-      <Notification success={false} message={errorMessage} />
+      <Notification />
       <p>{user.name} logged-in</p>
       <button onClick={handleLogout}>Logout</button>
       <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
