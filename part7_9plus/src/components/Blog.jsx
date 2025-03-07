@@ -10,12 +10,11 @@ const Blog = ({ handleLike, handleRemove, blog, canRemove }) => {
   };
 
   const addLike = () => {
-    blog.likes = blog.likes + 1;
     handleLike(blog);
   };
 
   const removeBlog = () => {
-    handleRemove(blog);
+    handleRemove(blog.id);
   };
 
   return (

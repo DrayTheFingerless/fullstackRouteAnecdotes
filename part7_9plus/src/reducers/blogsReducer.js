@@ -50,7 +50,8 @@ export const initBlogs = () => {
 
   export const likeBlog = (blog) => {
     return async dispatch => {
-      const updatedBlog = await blogs.put(anecdote.id,anecdote)
+      const newBlog = {...blog, likes: blog.likes+1}
+      const updatedBlog = await blogs.put(blog.id,newBlog)
       dispatch(updateBlog(updatedBlog))
     }
   }

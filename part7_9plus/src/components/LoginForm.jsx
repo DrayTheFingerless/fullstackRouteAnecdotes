@@ -1,12 +1,29 @@
 import PropTypes from "prop-types";
+import { useState, useEffect, useRef } from "react";
 
-const LoginForm = ({
-  handleLogin,
-  username,
-  password,
-  setUsername,
-  setPassword,
-}) => {
+import { useReducer } from 'react'
+import { loginUser } from "../reducers/loginReducer";
+import { useDispatch } from "react-redux";
+import { createNotif } from "../reducers/notificationReducer";
+
+
+const LoginForm = () => {
+  const dispatch = useDispatch()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async (event) => {
+      event.preventDefault();
+      try {
+        dispatch(loginUser(username,password))
+        dispatch(createNotif("Logged in with user " + username, true));
+        setUsername("");
+        setPassword("");
+      } catch (exception) {
+        dispatch(createNotif("Wrong credentials", false));
+      }
+    };
+
   return (
     <form onSubmit={handleLogin}>
       <div>
@@ -32,14 +49,6 @@ const LoginForm = ({
       <button type="submit">login</button>
     </form>
   );
-};
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired,
 };
 
 export default LoginForm;

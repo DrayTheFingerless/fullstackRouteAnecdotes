@@ -11,56 +11,32 @@ import loginService from "./services/login";
 import blogService from "./services/blogs";
 import { createNotif } from "./reducers/notificationReducer";
 import { initBlogs, addBlog, removeBlog, likeBlog } from "./reducers/blogsReducer";
+import { deleteUser } from "./reducers/loginReducer";
 
 const App = () => {
   const dispatch = useDispatch()
+
+  const user = useSelector(state => {
+    console.log("user in state: " + state.user)
+    return state.user
+  })
 
   const blogs = useSelector(state => { 
     console.log(state.blogs)
     return state.blogs
   })
   
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-
   const blogFormRef = useRef();
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
 
   useEffect(() => {    
     dispatch(initBlogs())   
   }, [user]) 
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-
-      window.localStorage.setItem("loggedUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      dispatch(createNotif("Logged in with user " + user.name, true));
-      setUser(user);
-      setUsername("");
-      setPassword("");
-    } catch (exception) {
-      dispatch(createNotif("Wrong credentials", false));
-    }
-  };
+  
 
   const handleLogout = async () => {
-    window.localStorage.removeItem("loggedUser");
-    setUser(null);
+    dispatch(deleteUser());
     blogService.setToken(null);
   };
 
@@ -100,17 +76,12 @@ const App = () => {
     return blog.user === user.username;
   };
 
+  console.log("User:" + user)
   if (user === null) {
     return (
       <>
         <Notification />
-        <LoginForm
-          handleLogin={handleLogin}
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        />
+        <LoginForm/>
       </>
     );
   }
