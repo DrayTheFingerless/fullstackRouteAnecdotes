@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useReducer } from 'react'
 import { loginUser } from "../reducers/loginReducer";
 import { useDispatch } from "react-redux";
-import { createNotif } from "../reducers/notificationReducer";
 
 
 const LoginForm = () => {
@@ -14,14 +13,9 @@ const LoginForm = () => {
 
   const handleLogin = async (event) => {
       event.preventDefault();
-      try {
-        dispatch(loginUser(username,password))
-        dispatch(createNotif("Logged in with user " + username, true));
-        setUsername("");
-        setPassword("");
-      } catch (exception) {
-        dispatch(createNotif("Wrong credentials", false));
-      }
+      dispatch(loginUser(username,password))
+      setUsername("");
+      setPassword("");
     };
 
   return (

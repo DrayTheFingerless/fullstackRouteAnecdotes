@@ -1,13 +1,13 @@
 import "./index.css";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoginForm from "./components/LoginForm";
 import Blog from "./components/Blog";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
+import Users from "./components/Users";
 
-import loginService from "./services/login";
 import blogService from "./services/blogs";
 import { createNotif } from "./reducers/notificationReducer";
 import { initBlogs, addBlog, removeBlog, likeBlog } from "./reducers/blogsReducer";
@@ -103,7 +103,8 @@ const App = () => {
           canRemove={checkBlogBelongs(user, blog)}
         />
       ))}
-    </div>
+      <Users></Users>
+     </div>
   );
 };
 
