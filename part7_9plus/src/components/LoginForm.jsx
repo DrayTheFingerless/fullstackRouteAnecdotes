@@ -4,16 +4,20 @@ import { useState, useEffect, useRef } from "react";
 import { useReducer } from 'react'
 import { loginUser } from "../reducers/loginReducer";
 import { useDispatch } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (event) => {
       event.preventDefault();
       dispatch(loginUser(username,password))
+      navigate('/')
       setUsername("");
       setPassword("");
     };

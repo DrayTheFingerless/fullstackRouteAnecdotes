@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { initUsers } from "../reducers/usersReducer.js";
-
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
+import { initUsers } from "../reducers/usersReducer"
+import { Link } from "react-router-dom"
 const Users = () => {
 
 const dispatch = useDispatch()
@@ -14,6 +14,8 @@ useEffect(() => {
     dispatch(initUsers())   
 }, []) 
     
+
+
   return (
     <div>
         <table>
@@ -24,7 +26,9 @@ useEffect(() => {
             </tr>   
             {users.map((user) => (
                 <tr key= {user.username}>
-                    <td>{user.name}</td>
+                    <td>
+                    <Link to={`/users/${user.id}`}>{user.name}</Link> 
+                    </td>
                     <td>{user.blogs.length}</td>
                 </tr>      
             ))}

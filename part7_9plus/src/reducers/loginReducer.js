@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import login from "../services/login"
 import blogs from "../services/blogs"
+import users from "../services/users"
 import { createNotif } from "../reducers/notificationReducer";
 
 const loginSlice = createSlice({
@@ -23,6 +24,7 @@ export const loginUser = (username, password) => {
       try {
       const newUser = await login.login({username, password})    
       blogs.setToken(newUser.token);
+      users.setToken(newUser.token)
       dispatch(createUser(newUser))  
       dispatch(createNotif("Logged in with user " + username, true));
       } catch (exception) {

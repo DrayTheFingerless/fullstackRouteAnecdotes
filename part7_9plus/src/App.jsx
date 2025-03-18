@@ -12,6 +12,12 @@ import blogService from "./services/blogs";
 import { createNotif } from "./reducers/notificationReducer";
 import { initBlogs, addBlog, removeBlog, likeBlog } from "./reducers/blogsReducer";
 import { deleteUser } from "./reducers/loginReducer";
+import User from "./components/User";
+import Blogs from "./components/Blogs";
+
+import {
+  Routes, Route, Link
+} from 'react-router-dom'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -21,20 +27,13 @@ const App = () => {
     return state.user
   })
 
-  const blogs = useSelector(state => { 
-    console.log(state.blogs)
-    return state.blogs
-  })
-  
   const blogFormRef = useRef();
-
 
   useEffect(() => {    
     dispatch(initBlogs())   
   }, [user]) 
 
   
-
   const handleLogout = async () => {
     dispatch(deleteUser());
     blogService.setToken(null);
@@ -51,33 +50,8 @@ const App = () => {
     }
   };
 
-  const handleLike = async (newObject) => {
-    try {
-      dispatch(likeBlog(newObject))
-    } catch (exception) {
-      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
-      console.log(exception);
-    }
-  };
-
-  const handleRemove = async (newObject) => {
-    try {
-      dispatch(removeBlog(newObject))
-    } catch (exception) {
-      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
-      console.log(exception);
-    }
-  };
-
-  const checkBlogBelongs = (user, blog) => {
-    console.log("blog user id", blog.user);
-    console.log("user id", user);
-
-    return blog.user === user.username;
-  };
-
   console.log("User:" + user)
-  if (user === null) {
+  if (!user) {
     return (
       <>
         <Notification />
@@ -88,23 +62,22 @@ const App = () => {
 
   return (
     <div>
-      <Notification />
+    <Notification />
       <p>{user.name} logged-in</p>
       <button onClick={handleLogout}>Logout</button>
       <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
         <CreateBlog handleCreate={handleCreate} />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-          key={blog.id}
-          blog={blog}
-          canRemove={checkBlogBelongs(user, blog)}
-        />
-      ))}
-      <Users></Users>
-     </div>
+      <Link  to="/">Home</Link>
+      <Link  to="/users">Users</Link>
+    
+
+      <Routes>
+        <Route path="/" element={<Blogs />} />
+        <Route path="/users" element={<Users></Users>} />
+        <Route path="/users/:id" element={<User/>} />
+      </Routes>
+    </div>
   );
 };
 
