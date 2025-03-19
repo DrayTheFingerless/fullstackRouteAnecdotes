@@ -53,15 +53,15 @@ const App = () => {
   console.log("User:" + user)
   if (!user) {
     return (
-      <>
+      <div className="container">
         <Notification />
         <LoginForm/>
-      </>
+      </div>
     );
   }
 
   return (
-    <div>
+    <div className="container">
     <Notification />
       <p>{user.name} logged-in</p>
       <button onClick={handleLogout}>Logout</button>
