@@ -1,10 +1,13 @@
 import { useParams } from "react-router-dom"
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
-import { likeBlog } from "../reducers/blogsReducer"
+import { addComment, likeBlog } from "../reducers/blogsReducer"
 
 const Blog = () => {
   const id = useParams().id  
   const dispatch = useDispatch()
+  const [comment, setComment] = useState("");
+
 
   const blogStyle = {
     paddingTop: 10,
@@ -51,6 +54,12 @@ const Blog = () => {
     }
   };
 
+  const handleAddComment = async (event) => {
+      event.preventDefault();
+      console.log("new comment", comment)
+      dispatch(addComment(blog,comment))
+  };
+
   const checkBlogBelongs = () => {
     console.log("blog user id", blog.user);
     console.log("user id", user);
@@ -72,7 +81,18 @@ const Blog = () => {
           {blog.likes} likes <button onClick={addLike}>Like</button>
         </p>
         <p>Added by {blog.author}</p>
-        <h3>Comment</h3>
+        <h3>Comments</h3>
+        <form onSubmit={handleAddComment}>
+          <div>
+            <input
+              type="type comment..."
+              value={comment}
+              name="Comment"
+              onChange={({ target }) => setComment(target.value)}
+            />
+          </div>
+          <button type="submit">add comment</button>
+        </form>
         {blog.comments.map((comment) => (
             <p>- {comment}</p>
           ))}

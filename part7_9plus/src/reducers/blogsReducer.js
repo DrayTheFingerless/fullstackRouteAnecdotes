@@ -55,5 +55,15 @@ export const initBlogs = () => {
       dispatch(updateBlog(updatedBlog))
     }
   }
+
+  export const addComment = (blog,comment) => {
+    return async dispatch => {
+      const newBlog = {...blog, comments: blog.comments.concat(comment)}
+      console.log("transformed comment", newBlog)
+      const updatedBlog = await blogs.put(blog.id,newBlog)
+      console.log("updated blog",)
+      dispatch(updateBlog(updatedBlog))
+    }
+  }
   
 export default blogsSlice.reducer
