@@ -1,6 +1,4 @@
-import Togglable from "./Togglable"
 import { useParams } from "react-router-dom"
-import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { likeBlog } from "../reducers/blogsReducer"
 
@@ -16,7 +14,7 @@ const Blog = () => {
     marginBottom: 5,
   };
 
-  const uesr = useSelector(state => {
+  const user = useSelector(state => {
     console.log("user in state: " + state.user)
     return state.user
   })
@@ -74,6 +72,10 @@ const Blog = () => {
           {blog.likes} likes <button onClick={addLike}>Like</button>
         </p>
         <p>Added by {blog.author}</p>
+        <h3>Comment</h3>
+        {blog.comments.map((comment) => (
+            <p>- {comment}</p>
+          ))}
       </div>
       <p style={{ display: checkBlogBelongs ? "" : "none" }}>
         <button onClick={checkBlogBelongs}>Remove</button>
