@@ -1,6 +1,13 @@
-import Togglable from "./Togglable";
+import Togglable from "./Togglable"
+import { useParams } from "react-router-dom"
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { likeBlog } from "../reducers/blogsReducer"
 
-const Blog = ({ handleLike, handleRemove, blog, canRemove }) => {
+const Blog = () => {
+  const id = useParams().id  
+  const dispatch = useDispatch()
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -8,6 +15,16 @@ const Blog = ({ handleLike, handleRemove, blog, canRemove }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
+
+  const uesr = useSelector(state => {
+    console.log("user in state: " + state.user)
+    return state.user
+  })
+
+  const blog = useSelector(state => {
+    console.log("blog in state: " + state.blogs)
+    return state.blogs.find(b => b.id === id) 
+  })
 
   const addLike = () => {
     handleLike(blog);
@@ -17,21 +34,49 @@ const Blog = ({ handleLike, handleRemove, blog, canRemove }) => {
     handleRemove(blog.id);
   };
 
+
+  const handleLike = async (newObject) => {
+    try {
+      dispatch(likeBlog(newObject))
+    } catch (exception) {
+      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
+      console.log(exception);
+    }
+  };
+
+  const handleRemove = async (newObject) => {
+    try {
+      dispatch(removeBlog(newObject))
+    } catch (exception) {
+      dispatch(createNotif("Error trying to like blog: " + exception.message, false));
+      console.log(exception);
+    }
+  };
+
+  const checkBlogBelongs = () => {
+    console.log("blog user id", blog.user);
+    console.log("user id", user);
+
+    return blog.user === user.username;
+  };
+
+
+  if(!blog) { return null }
+
   return (
     <div style={blogStyle} className="blog">
-      <p className="blogTitleAuthor">
-        {blog.title} - {blog.author}
-      </p>
-      <Togglable buttonLabel="show">
-        <div className="blogDetailContent">
-          <p>{blog.url}</p>
-          <p data-testid="numberLikes">
-            {blog.likes} likes <button onClick={addLike}>Like</button>
-          </p>
-        </div>
-      </Togglable>
-      <p style={{ display: canRemove ? "" : "none" }}>
-        <button onClick={removeBlog}>Remove</button>
+      <h2 className="blogTitleAuthor">
+        {blog.title}
+      </h2>
+      <div className="blogDetailContent">
+        <a href={blog.url}>{blog.url}</a>
+        <p data-testid="numberLikes">
+          {blog.likes} likes <button onClick={addLike}>Like</button>
+        </p>
+        <p>Added by {blog.author}</p>
+      </div>
+      <p style={{ display: checkBlogBelongs ? "" : "none" }}>
+        <button onClick={checkBlogBelongs}>Remove</button>
       </p>
     </div>
   );

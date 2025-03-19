@@ -68,14 +68,14 @@ const App = () => {
       <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
         <CreateBlog handleCreate={handleCreate} />
       </Togglable>
-      <Link  to="/">Home</Link>
+      <Link  to="/">Blogs</Link>
       <Link  to="/users">Users</Link>
-    
-
+      
       <Routes>
         <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users></Users>} />
         <Route path="/users/:id" element={<User/>} />
+        <Route path="/blogs/:id" element={<Blog />}/>
       </Routes>
     </div>
   );
